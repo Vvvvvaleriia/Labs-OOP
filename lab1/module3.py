@@ -7,6 +7,9 @@ def show_dialog(parent, on_select):
     dialog.resize(400, 300)
 
     groups_list = QListWidget(dialog)
+    groups_list.addItem("")
+    groups_list.item(0).setHidden(True)
+    
     groups_list.move(30, 30)
     groups_list.resize(340, 180)
 
@@ -15,6 +18,8 @@ def show_dialog(parent, on_select):
 
     for group in data:
         groups_list.addItem(group)
+    
+    groups_list.setCurrentRow(-1)
 
     yes_button = QPushButton("Так", dialog)
     yes_button.move(100, 230)
@@ -22,10 +27,10 @@ def show_dialog(parent, on_select):
     cancel_button.move(200, 230)
 
     def yes_clicked():
-        selected_item = groups_list.currentItem()
+        selected_items = groups_list.selectedItems()
 
-        if selected_item:
-            on_select(selected_item.text())
+        if selected_items:
+            on_select(selected_items[0].text())
             dialog.close()
 
     def cancel_clicked():
