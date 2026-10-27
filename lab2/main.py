@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QPainter, QPen, QColor, QPalette
+from PySide6.QtGui import QAction, QPainter, QPen, QColor, QPalette, QMouseEvent
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -37,7 +37,7 @@ class DrawingArea(QWidget):
     def set_shape(self, shape_name):
         self.current_shape = shape_name
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.MouseButton.LeftButton:
             self.x1 = int(event.position().x())
             self.y1 = int(event.position().y())
@@ -54,13 +54,13 @@ class DrawingArea(QWidget):
 
             self.update()
 
-    def mouseMoveEvent(self, event):
+    def mouseMoveEvent(self, event: QMouseEvent):
         if self.drawing:
             self.x2 = int(event.position().x())
             self.y2 = int(event.position().y())
             self.update()
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event: QMouseEvent):
         if (event.button() == Qt.MouseButton.LeftButton and self.drawing):
             self.x2 = int(event.position().x())
             self.y2 = int(event.position().y())
@@ -76,7 +76,7 @@ class DrawingArea(QWidget):
 
             else: shape = None
 
-            if shape is not None: ##!=
+            if shape is not None:
                 self.add_shape(shape) 
 
             self.drawing = False    
@@ -92,14 +92,14 @@ class DrawingArea(QWidget):
 
         self.update()
 
-    def paintEvent(self):
+    def paintEvent(self, event):
         painter = QPainter(self)
 
         for i in range(self.shape_count):
-            shape = self.pcshape[i]
+            shape: Shape = self.pcshape[i]
 
             if shape is not None:
-                shape.draw(painter) ## для конкретної фігури
+                shape.draw(painter)
 
         if self.drawing and self.current_shape != "Крапка":
             painter.setPen(QPen(QColor("blue"), 1, Qt.PenStyle.SolidLine))
@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
 
         shape_names = ["Крапка", "Лінія", "Прямокутник", "Еліпс"]
 
-        self.shape_actions = {} ##словник
+        self.shape_actions: dict[str, QAction] = {} 
 
         for name in shape_names:
             action = QAction(name, self)
