@@ -90,8 +90,6 @@ class DrawingArea(QWidget):
         self.pcshape[self.shape_count] = shape
         self.shape_count += 1
 
-        self.update()
-
     def paintEvent(self, event):
         painter = QPainter(self)
 
