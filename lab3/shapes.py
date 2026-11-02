@@ -19,8 +19,9 @@ class Point(Shape):
         super().__init__(x, y, x, y)
 
     def draw(self, painter: QPainter):
-        painter.setPen(QPen(QColor("black"), 3))
-        painter.drawPoint(QPoint(self.x1, self.y1))
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor("black"))
+        painter.drawEllipse(QPoint(self.x1, self.y1), 3, 3)
 
 class Line(Shape):
     def draw(self, painter: QPainter):
@@ -38,7 +39,7 @@ class Rectangle(Shape):
         height = radius_y * 2
 
         painter.setPen(QPen(QColor("black"), 2))
-        painter.setBrush(QBrush(QColor("#DEACE6")))
+        painter.setBrush(QBrush(QColor("#EFB3E5")))
         painter.drawRect(left, top, width, height)
 
 class Ellipse(Shape):
