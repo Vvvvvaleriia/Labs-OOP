@@ -125,30 +125,17 @@ class DrawingArea(QWidget):
             shape.draw(painter)
 
         if self.drawing and self.current_shape != "Крапка":
-            painter.setPen(QPen(QColor("black"), 3, Qt.PenStyle.DashLine))
-            painter.setBrush(Qt.BrushStyle.NoBrush)
 
             if self.current_shape == "Лінія":
-                painter.drawLine(self.x1, self.y1, self.x2, self.y2)
+                preview_shape = Line(self.x1, self.y1, self.x2, self.y2)
 
             elif self.current_shape == "Прямокутник":
-                radius_x = abs(self.x2 - self.x1)
-                radius_y = abs(self.y2 - self.y1)
-
-                left = self.x1 - radius_x
-                top = self.y1 - radius_y
-                width = radius_x * 2
-                height = radius_y * 2
-
-                painter.drawRect(left, top, width, height)
+                preview_shape = Rectangle(self.x1, self.y1, self.x2, self.y2)
 
             elif self.current_shape == "Еліпс":
-                left = min(self.x1, self.x2)
-                top = min(self.y1, self.y2)
-                width = abs(self.x2 - self.x1)
-                height = abs(self.y2 - self.y1)
+                preview_shape = Ellipse(self.x1, self.y1, self.x2, self.y2)
 
-                painter.drawEllipse(left, top, width, height)
+            preview_shape.draw_preview(painter, self.x2, self.y2)
 
 class MainWindow(QMainWindow):
     def __init__(self):
