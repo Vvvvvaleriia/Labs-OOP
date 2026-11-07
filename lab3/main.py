@@ -14,11 +14,9 @@ N = 127
 
 def create_icon(shape_name):
     pixmap = QPixmap(32, 32)
-    pixmap.fill(Qt.GlobalColor.transparent)
+    pixmap.fill(QColor("#343333"))
 
     painter = QPainter(pixmap)
-    painter.setPen(QPen(QColor("black"), 2))
-    painter.setBrush(Qt.BrushStyle.NoBrush)
 
     if shape_name == "Крапка":
         painter.setPen(Qt.PenStyle.NoPen)
@@ -26,6 +24,7 @@ def create_icon(shape_name):
         painter.drawEllipse(QPoint(16, 16), 3, 3)
 
     elif shape_name == "Лінія":
+        painter.setPen(QPen(QColor("black"), 2))
         painter.drawLine(4, 27, 28, 5)
 
     elif shape_name == "Прямокутник":

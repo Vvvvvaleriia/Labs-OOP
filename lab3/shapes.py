@@ -25,7 +25,7 @@ class Point(Shape):
 
 class Line(Shape):
     def draw(self, painter: QPainter):
-        painter.setPen(QPen(QColor("black"), 2))
+        painter.setPen(QPen(QColor("black"), 3))
         painter.drawLine(self.x1, self.y1, self.x2, self.y2)
 
 class Rectangle(Shape):
@@ -38,7 +38,7 @@ class Rectangle(Shape):
         width = radius_x * 2
         height = radius_y * 2
 
-        painter.setPen(QPen(QColor("black"), 2))
+        painter.setPen(QPen(QColor("black"), 3))
         painter.setBrush(QBrush(QColor("#EFB3E5")))
         painter.drawRect(left, top, width, height)
 
@@ -49,6 +49,6 @@ class Ellipse(Shape):
         width = abs(self.x2 - self.x1)
         height = abs(self.y2 - self.y1)
 
-        painter.setPen(QPen(QColor("black"), 2))
+        painter.setPen(QPen(QColor("black"), 3))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawEllipse(left, top, width, height)
