@@ -168,7 +168,6 @@ class MainWindow(QMainWindow):
 
         for name in shape_names:
             action = QAction(create_icon(name), name, self)
-            action.setToolTip(name)
             action.triggered.connect(lambda checked=False, n=name: self.select_shape(n))
 
             self.objects_menu.addAction(action)
