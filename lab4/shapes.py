@@ -25,7 +25,7 @@ class Point(Shape):
     def draw(self, painter: QPainter):
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(QColor("black"))
-        painter.drawEllipse(QPoint(self.x1, self.y1), 3, 3)
+        painter.drawEllipse(QPoint(self.x1, self.y1), 4, 4)
 
     def draw_preview(self, painter: QPainter, x2: int, y2: int):
         pass
