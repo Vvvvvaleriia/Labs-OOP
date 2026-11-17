@@ -40,7 +40,7 @@ class Line(Shape):
         painter.drawLine(self.x1, self.y1, self.x2, self.y2)
 
 class Rectangle(Shape):
-    def draw(self, painter: QPainter):
+    def _geometry(self):
         radius_x = abs(self.x2 - self.x1)
         radius_y = abs(self.y2 - self.y1)
 
@@ -48,49 +48,48 @@ class Rectangle(Shape):
         top = self.y1 - radius_y
         width = radius_x * 2
         height = radius_y * 2
+
+        return left, top, width, height
+
+    def draw(self, painter: QPainter):
+        left, top, width, height = self._geometry()
 
         painter.setPen(QPen(QColor("black"), 3))
         painter.setBrush(QBrush(QColor("#EFB3E5")))
         painter.drawRect(left, top, width, height)
 
     def draw_preview(self, painter: QPainter):
-        radius_x = abs(self.x2 - self.x1)
-        radius_y = abs(self.y2 - self.y1)
-
-        left = self.x1 - radius_x
-        top = self.y1 - radius_y
-        width = radius_x * 2
-        height = radius_y * 2
+        left, top, width, height = self._geometry()
 
         painter.setPen(QPen(QColor("black"), 3, Qt.PenStyle.DashLine))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(left, top, width, height)
 
 class Ellipse(Shape):
-    def draw(self, painter: QPainter):
+    def _geometry(self):
         left = min(self.x1, self.x2)
         top = min(self.y1, self.y2)
         width = abs(self.x2 - self.x1)
         height = abs(self.y2 - self.y1)
+
+        return left, top, width, height
+
+    def draw(self, painter: QPainter):
+        left, top, width, height = self._geometry()
 
         painter.setPen(QPen(QColor("black"), 3))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawEllipse(left, top, width, height)
 
     def draw_preview(self, painter: QPainter):
-        left = min(self.x1, self.x2)
-        top = min(self.y1, self.y2)
-        width = abs(self.x2 - self.x1)
-        height = abs(self.y2 - self.y1)
+        left, top, width, height = self._geometry()
 
         painter.setPen(QPen(QColor("black"), 3, Qt.PenStyle.DashLine))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawEllipse(left, top, width, height)
 
 class LineWithCircles(Line, Ellipse):
-    def draw(self, painter: QPainter):
-        Line.draw(self, painter)
-
+    def _circles(self):
         radius = 10
 
         circle1 = Ellipse(
@@ -99,35 +98,28 @@ class LineWithCircles(Line, Ellipse):
         self.x1 + radius,
         self.y1 + radius
         )
-        Ellipse.draw(circle1, painter)
-
+        
         circle2 = Ellipse(
         self.x2 - radius,
         self.y2 - radius,
         self.x2 + radius,
         self.y2 + radius
         )
-        Ellipse.draw(circle2, painter)
 
+        return circle1, circle2
+
+    def draw(self, painter: QPainter):
+        circle1, circle2 = self._circles()
+
+        Line.draw(self, painter)
+        Ellipse.draw(circle1, painter)
+        Ellipse.draw(circle2, painter)
+        
     def draw_preview(self, painter: QPainter):
-        radius = 10
+        circle1, circle2 = self._circles()
 
         Line.draw_preview(self, painter)
-
-        circle1 = Ellipse(
-        self.x1 - radius,
-        self.y1 - radius,
-        self.x1 + radius,
-        self.y1 + radius
-        )
         Ellipse.draw_preview(circle1, painter)
-
-        circle2 = Ellipse(
-        self.x2 - radius,
-        self.y2 - radius,
-        self.x2 + radius,
-        self.y2 + radius
-        )
         Ellipse.draw_preview(circle2, painter)
 
 class Cube(Line, Rectangle):
