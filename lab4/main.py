@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtCore import Qt, QSize, QPoint
-from PySide6.QtGui import QAction, QPainter, QPen, QColor, QPalette, QIcon, QPixmap, QBrush, QMouseEvent
+from PySide6.QtGui import QAction, QPainter, QPen, QColor, QPalette, QIcon, QPixmap, QBrush, QMouseEvent, QPolygon
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -47,15 +47,28 @@ def create_icon(shape_name):
 
     elif shape_name == "Куб":
         painter.setPen(QPen(QColor("black"), 2))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-
-        painter.drawRect(5, 11, 16, 16)
+        
+        painter.setBrush(QBrush(QColor("#EFB3E5")))
         painter.drawRect(11, 5, 16, 16)
 
-        painter.drawLine(5, 11, 11, 5)
-        painter.drawLine(21, 11, 27, 5)
-        painter.drawLine(21, 27, 27, 21)
-        painter.drawLine(5, 27, 11, 21)
+        painter.setBrush(QBrush(QColor("#F5D0EF")))
+        painter.drawPolygon(QPolygon([
+            QPoint(11, 5),
+            QPoint(27, 5),
+            QPoint(21, 11),
+            QPoint(5, 11),
+        ]))
+
+        painter.setBrush(QBrush(QColor("#D98FCF")))
+        painter.drawPolygon(QPolygon([
+            QPoint(27, 5),
+            QPoint(27, 21),
+            QPoint(21, 27),
+            QPoint(21, 11),
+        ]))
+
+        painter.setBrush(QBrush(QColor("#EFB3E5")))
+        painter.drawRect(5, 11, 16, 16)
 
     painter.end()
 
