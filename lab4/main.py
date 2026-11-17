@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 )
 from shapes import Shape, Point, Line, Rectangle, Ellipse, LineWithCircles, Cube
 
+
 N = 127
 
 def create_icon(shape_name):
