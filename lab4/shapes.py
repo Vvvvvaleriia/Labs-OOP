@@ -27,7 +27,7 @@ class Point(Shape):
         painter.setBrush(QColor("black"))
         painter.drawEllipse(QPoint(self.x1, self.y1), 4, 4)
 
-    def draw_preview(self, painter: QPainter, x2: int, y2: int):
+    def draw_preview(self, painter: QPainter):
         pass
 
 class Line(Shape):
