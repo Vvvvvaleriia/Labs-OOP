@@ -202,7 +202,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = MyEditor()
-    window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
     window.show()
 
     exit_code = app.exec()
