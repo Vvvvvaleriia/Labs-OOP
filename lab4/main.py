@@ -189,7 +189,7 @@ class MyEditor(QMainWindow):
         for name, action in self.toolbar_actions.items():
             action.setChecked(name == shape_name)
 
-        self.setWindowTitle(f"Lab3 - {shape_name}")
+        self.setWindowTitle(f"Lab4 - {shape_name}")
 
     def clear_canvas(self):
         self.drawing_area.pcshape.clear()

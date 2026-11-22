@@ -30,7 +30,6 @@ def create_icon(shape_name):
         painter.setPen(QPen(QColor("black"), 2))
         painter.drawLine(4, 27, 28, 5)
 
-        painter.setBrush(Qt.BrushStyle.BDiagPattern)
         painter.drawEllipse(1, 24, 6, 6)
         painter.drawEllipse(25, 2, 6, 6)
 
