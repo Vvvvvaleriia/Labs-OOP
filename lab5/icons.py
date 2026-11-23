@@ -26,7 +26,7 @@ def create_icon(shape_name):
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawEllipse(4, 7, 24, 18)
 
-    elif shape_name == "Лінія з колами":
+    elif shape_name == "Лінія з кружечками":
         painter.setPen(QPen(QColor("black"), 2))
         painter.drawLine(4, 27, 28, 5)
 
