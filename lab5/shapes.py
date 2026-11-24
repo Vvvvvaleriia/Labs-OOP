@@ -21,6 +21,10 @@ class Shape(ABC):
 
     def coords(self):
         return self.x1, self.y1, self.x2, self.y2
+    
+    def bounds(self):
+        return (min(self.x1, self.x2), min(self.y1, self.y2),
+            abs(self.x2 - self.x1), abs(self.y2 - self.y1))
 
     @abstractmethod
     def draw(self, painter: QPainter):
@@ -69,6 +73,9 @@ class Rectangle(Shape):
         height = radius_y * 2
 
         return left, top, width, height
+    
+    def bounds(self):
+        return self._geometry()
 
     def draw(self, painter: QPainter):
         left, top, width, height = self._geometry()
@@ -109,7 +116,6 @@ class Ellipse(Shape):
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawEllipse(left, top, width, height)
 
-
 class LineWithCircles(Shape):
     name = "Лінія з кружечками"
 
@@ -134,6 +140,11 @@ class LineWithCircles(Shape):
         y2 + radius
         )
 
+    def bounds(self):
+        r = 10
+        return (min(self.x1, self.x2) - r, min(self.y1, self.y2) - r,
+            abs(self.x2 - self.x1) + 2 * r, abs(self.y2 - self.y1) + 2 * r)
+
     def draw(self, painter: QPainter):
         self.line.draw(painter)
         self.circle1.draw(painter)
@@ -157,6 +168,7 @@ class Cube(Shape):
         side = (side // 2) * 2
 
         self.valid = side >= 2
+        self._bounds = (x1, y1, 0, 0)
         if not self.valid:
             return
         
@@ -171,6 +183,8 @@ class Cube(Shape):
         if y2 >= y1:
             top = y1
         else: top = y1 - total
+
+        self._bounds = (left, top, total, total)
 
         self.back = Rectangle(
             left + depth + half,
@@ -207,9 +221,10 @@ class Cube(Shape):
             Line(left + depth, top + side, left, top + depth + side),             
         ]
 
+    def bounds(self):
+        return self._bounds
+
     def draw(self, painter: QPainter):
-        if not self.valid:
-            return
         
         self.back.draw(painter)
 

@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction, QPainter, QColor, QPalette, QMouseEvent
+from PySide6.QtGui import QAction, QPainter, QColor, QPalette, QMouseEvent, QPen
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QToolBar, QMessageBox, QFileDialog
 )
@@ -12,7 +12,9 @@ from my_table import MyTable
 class DrawingArea(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.editor = MyEditor.get_instance()
+        self.editor.subscribe(self.update)
 
         self.current_shape = "Крапка"
 
@@ -22,6 +24,8 @@ class DrawingArea(QWidget):
         self.y2 = 0
 
         self.drawing = False
+
+        self.selected_index = None
 
         self.setMinimumSize(600, 400)
         self.setAutoFillBackground(True)
@@ -77,9 +81,19 @@ class DrawingArea(QWidget):
         for shape in self.editor.shapes:
             shape.draw(painter)
 
+        if self.selected_index is not None and self.selected_index < len(self.editor.shapes):
+            left, top, width, height = self.editor.shapes[self.selected_index].bounds()
+            painter.setPen(QPen(QColor("red"), 2, Qt.PenStyle.DashLine))
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.drawRect(left - 4, top - 4, width + 8, height + 8)
+
         if self.drawing:
             shape_class = Shape.registry[self.current_shape]
             shape_class(self.x1, self.y1, self.x2, self.y2).draw_preview(painter)
+
+    def set_selected(self, index):
+        self.selected_index = index
+        self.update()
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -100,9 +114,13 @@ class MainWindow(QMainWindow):
         menu_bar = self.menuBar()
 
         file_menu = menu_bar.addMenu("Файл")
-        save_action = QAction("Зберегти як CSV...", self)
+        save_action = QAction("Зберегти як CSV", self)
         save_action.triggered.connect(self.save_file)
         file_menu.addAction(save_action)
+
+        open_action = QAction("Відкрити CSV", self)
+        open_action.triggered.connect(self.open_file)
+        file_menu.addAction(open_action)
 
         clear_action = QAction("Очистити", self)
         clear_action.triggered.connect(self.clear_canvas)
@@ -159,7 +177,8 @@ class MainWindow(QMainWindow):
     def toggle_table(self, checked):
         if checked:
             self.table = MyTable(self)
-            
+            self.table.set_select_callback(self.drawing_area.set_selected)
+    
             self.table.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
             self.table.finished.connect(self.on_table_closed)
 
@@ -170,6 +189,7 @@ class MainWindow(QMainWindow):
     def on_table_closed(self):
         self.table = None
         self.table_action.setChecked(False)
+        self.drawing_area.set_selected(None)
 
     def save_file(self):
         path, _ = QFileDialog.getSaveFileName(self, "Зберегти", "shapes.csv", "CSV (*.csv)")
@@ -179,6 +199,7 @@ class MainWindow(QMainWindow):
 
     def clear_canvas(self):
         self.editor.clear()
+        self.drawing_area.set_selected(None)
         self.drawing_area.update()
 
     def show_about(self):
@@ -188,6 +209,19 @@ class MainWindow(QMainWindow):
         if self.table is not None:
             self.table.close()                  
         event.accept()
+        self.editor.unsubscribe(self.drawing_area.update)
+
+    def open_file(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Відкрити", "", "CSV (*.csv)")
+        if not path:
+            return
+        
+        try: 
+            self.editor.load_csv(path)
+        except OSError as err:
+          QMessageBox.warning(self, "Помилка", f"Не вдалося відкрити файл:\n{err}") 
+          return
+        self.drawing_area.set_selected(None) 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
