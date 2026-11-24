@@ -88,123 +88,120 @@ class Ellipse(Shape):
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawEllipse(left, top, width, height)
 
-class LineWithCircles(Line, Ellipse):
-    def _circles(self):
+class LineWithCircles(Shape):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int):
+        super().__init__(x1, y1, x2, y2)
+
         radius = 10
 
-        circle1 = Ellipse(
-        self.x1 - radius,
-        self.y1 - radius,
-        self.x1 + radius,
-        self.y1 + radius
+        self.line = Line(x1, y1, x2, y2)
+
+        self.circle1 = Ellipse(
+        x1 - radius,
+        y1 - radius,
+        x1 + radius,
+        y1 + radius
         )
         
-        circle2 = Ellipse(
-        self.x2 - radius,
-        self.y2 - radius,
-        self.x2 + radius,
-        self.y2 + radius
+        self.circle2 = Ellipse(
+        x2 - radius,
+        y2 - radius,
+        x2 + radius,
+        y2 + radius
         )
-
-        return circle1, circle2
 
     def draw(self, painter: QPainter):
-        circle1, circle2 = self._circles()
-
-        Line.draw(self, painter)
-        Ellipse.draw(circle1, painter)
-        Ellipse.draw(circle2, painter)
+        self.line.draw(painter)
+        self.circle1.draw(painter)
+        self.circle2.draw(painter)
         
     def draw_preview(self, painter: QPainter):
-        circle1, circle2 = self._circles()
+        self.line.draw_preview( painter)
+        self.circle1.draw_preview(painter)
+        self.circle2.draw_preview( painter)
 
-        Line.draw_preview(self, painter)
-        Ellipse.draw_preview(circle1, painter)
-        Ellipse.draw_preview(circle2, painter)
+class Cube(Shape):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int):
+        super().__init__(x1, y1, x2, y2)
 
-class Cube(Line, Rectangle):
-    def _geometry(self, painter: QPainter, preview: bool):
-        width = abs(self.x2 - self.x1)
-        height = abs(self.y2 - self.y1)
+        width = abs(x2 - x1)
+        height = abs(y2 - y1)
 
         side = int(min(width, height) / 1.3)
         side = (side // 2) * 2
 
-        if side < 2:
+        self.valid = side >= 2
+        if not self.valid:
             return
         
         depth = int(side * 0.3)
         half = side // 2
         total = side + depth
 
-        if self.x2 >= self.x1:
-            left = self.x1
-        else: left = self.x1 - total
+        if x2 >= x1:
+            left = x1
+        else: left = x1 - total
         
-        if self.y2 >= self.y1:
-            top = self.y1
-        else: top = self.y1 - total
+        if y2 >= y1:
+            top = y1
+        else: top = y1 - total
 
-        back = Rectangle(
+        self.back = Rectangle(
             left + depth + half,
             top + half,
             left + depth + side, 
             top + side,
         )
 
-        front = Rectangle(
+        self.front = Rectangle(
             left + half,
             top + depth + half,
             left + side, 
             top + depth + side,
         )
 
-        top_face = QPolygon([
+        self.top_face = QPolygon([
             QPoint(left + depth, top),
             QPoint(left + depth + side, top),
             QPoint(left + side, top + depth),
             QPoint(left, top + depth)
         ])
 
-        right_face = QPolygon([
+        self.right_face = QPolygon([
             QPoint(left + depth + side, top),
             QPoint(left + depth + side, top + side),
             QPoint(left + side, top + depth + side),
             QPoint(left + side, top + depth)
         ])
 
-        if preview:
-            draw_rect = Rectangle.draw_preview
-        else: draw_rect = Rectangle.draw
-
-        draw_rect(back, painter)
-
-        if preview: 
-            painter.setPen(QPen(QColor("black"), 3, Qt.PenStyle.DashLine))
-            painter.setBrush(Qt.BrushStyle.NoBrush)
-            painter.drawPolygon(top_face)
-            painter.drawPolygon(right_face)
-        else:
-            painter.setPen(QPen(QColor("black"), 3))
-            painter.setBrush(QBrush(QColor("#F5D0EF")))
-            painter.drawPolygon(top_face)
-
-            painter.setBrush(QBrush(QColor("#D98FCF")))
-            painter.drawPolygon(right_face)
-
-        draw_rect(front, painter)
-
-        if preview:
-            hidden_edge = Line(
-                left + depth, 
-                top + side,
-                left,
-                top + depth + side
-            )
-            Line.draw_preview(hidden_edge, painter)
+        self.edges = [
+            Line(left + depth, top, left, top + depth),                           
+            Line(left + depth + side, top, left + side, top + depth),             
+            Line(left + depth + side, top + side, left + side, top + depth + side),  
+            Line(left + depth, top + side, left, top + depth + side),             
+        ]
 
     def draw(self, painter: QPainter):
-        self._geometry(painter, False)
+        if not self.valid:
+            return
+        
+        self.back.draw(painter)
+
+        painter.setPen(QPen(QColor("black"), 3))
+        painter.setBrush(QBrush(QColor("#F5D0EF")))
+        painter.drawPolygon(self.top_face)
+
+        painter.setBrush(QBrush(QColor("#D98FCF")))
+        painter.drawPolygon(self.right_face)
+
+        self.front.draw(painter)
 
     def draw_preview(self, painter: QPainter):
-        self._geometry(painter, True)
+        if not self.valid:
+            return
+
+        self.back.draw_preview(painter)
+        self.front.draw_preview(painter)
+
+        for edge in self.edges:
+            edge.draw_preview(painter)
